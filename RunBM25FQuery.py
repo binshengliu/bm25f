@@ -39,6 +39,13 @@ def fullpath(p: str) -> Path:
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Run queries distributedly")
 
+    parser.add_argument("-index")
+    parser.add_argument("-count", type=int)
+    parser.add_argument("-k1", type=float)
+    parser.add_argument("-fieldWt")
+    parser.add_argument("-fieldB")
+    parser.add_argument("-stemmer")
+
     parser.add_argument("-threads", type=int)
 
     parser.add_argument(
@@ -53,25 +60,32 @@ def parse_args() -> argparse.Namespace:
 def main() -> None:
     args = parse_args()
 
-    binpath = str(Path(__file__).with_name("bm25f"))
     wanted = ["index", "k1", "count", "fieldB", "fieldWt", "query", "stemmer"]
-    bin_args = [binpath]
     queries = []
+    args_dict = {k: v for k, v in vars(args).items() if k in wanted}
     for p in args.param:
         root = ET.parse(str(p)).getroot()
         for child in root:
             if child.tag not in wanted:
+                eprint(f"Unused tag {child.tag}")
                 continue
             if child.tag == "query":
                 queries.append((child.find("number").text, child.find("text").text))
             elif child.tag == "stemmer":
                 if child.find("name") is not None:
-                    bin_args.append("-{}={}".format(child.tag, child.find("name").text))
+                    args_dict[child.tag] = (
+                        args_dict[child.tag] or child.find("name").text
+                    )
                 else:
-                    bin_args.append("-{}={}".format(child.tag, child.text))
+                    args_dict[child.tag] = args_dict[child.tag] or child.text
             else:
-                bin_args.append("-{}={}".format(child.tag, child.text))
+                args_dict[child.tag] = args_dict[child.tag] or child.text
 
+    if not os.path.isdir(args_dict["index"]):
+        eprint(f"Index {args_dict['index']} is invalid")
+        exit(-1)
+    binpath = str(Path(__file__).with_name("bm25f"))
+    bin_args = [binpath] + [f"-{k}={v}" for k, v in args_dict.items()]
     bm25f_mp(bin_args, queries, args.threads)
 
 
