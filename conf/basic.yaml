@@ -1,0 +1,39 @@
+# @package _global_
+defaults:
+  - hydra/sweeper: basic           # default is basic
+  - hydra/job_logging: colorlog
+  - hydra/hydra_logging: colorlog
+
+hydra:
+  run:
+    dir: ${now:%Y-%m-%d}-${now:%H-%M-%S}
+  sweep:
+    dir: multirun/${now:%Y-%m-%d}-${now:%H-%M-%S}
+  job_logging:
+    root:
+      level: DEBUG
+    handlers:
+      console:
+        level: INFO
+      file:
+        level: DEBUG
+    loggers:
+      lightning:
+        handlers: []            # lightning will cause dups. remove.
+
+k1: 5
+title_wt: 20
+url_wt: 10
+text_wt: 1
+title_b: 0.8
+url_b: 0.8
+text_b: 0.8
+
+index_path: /research/remote/petabyte/users/binsheng/indri-indexes/MSMARCO_DOC_KROVETZ_FIELD/
+query_path: /research/remote/petabyte/users/binsheng/bm25f-run/bm25f.param
+qrels_path: /research/remote/petabyte/users/binsheng/bm25f-run/dev.qrels
+
+np_seed: 1988
+script_path: /research/remote/petabyte/users/binsheng/indri-5.15/bm25f/RunBM25FQuery.py
+metric: recip_rank_cut.100
+threads: 56
