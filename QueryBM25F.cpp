@@ -236,7 +236,7 @@ std::vector<std::pair<std::string, double>> QueryBM25F::query(std::string query)
   for (size_t termIndex = 0; termIndex < stems.size(); ++termIndex) {
     double count = _index->documentCount(stems[termIndex]);
     termDocCounts[termIndex] = count;
-    termIdf[termIndex] = log((_totalDocumentCount - count + 0.5) / (count + 0.5));
+    termIdf[termIndex] = std::max(1.0E-6, log((_totalDocumentCount - count + 0.5) / (count + 0.5)));
   }
 
   std::priority_queue<DocScore, vector<DocScore>, DocScore::greater> queue;
