@@ -17,17 +17,16 @@ hydra:
         level: INFO
       file:
         level: DEBUG
-    loggers:
-      lightning:
-        handlers: []            # lightning will cause dups. remove.
 
 k1: 5
 title_wt: 20
 url_wt: 10
 text_wt: 1
+t5_wt: 1
 title_b: 0.8
 url_b: 0.8
 text_b: 0.8
+t5_b: 0.8
 
 index_path: /research/remote/petabyte/users/binsheng/indri-indexes/MSMARCO_DOC_KROVETZ_FIELD/
 query_path: /research/remote/petabyte/users/binsheng/bm25f-run/bm25f.param

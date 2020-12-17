@@ -12,8 +12,11 @@ initialized = False
 
 @hydra.main(config_path="conf/", config_name="ax")  # type: ignore
 def main(cfg: DictConfig) -> float:
-    field_wt = f"title:{cfg.title_wt},url:{cfg.url_wt},text:{cfg.text_wt}"
-    field_b = f"title:{cfg.title_b},url:{cfg.url_b},text:{cfg.text_b}"
+    field_wt_list = [f"{k[:-3]}:{v}" for k, v in cfg.items() if k.endswith("_wt")]
+    field_wt = ",".join(field_wt_list)
+
+    field_b_list = [f"{k[:-2]}:{v}" for k, v in cfg.items() if k.endswith("_b")]
+    field_b = ",".join(field_b_list)
     output_path = f"k1={cfg.k1}-fieldWt={field_wt}-fieldB={field_b}.run"
 
     cmd = (

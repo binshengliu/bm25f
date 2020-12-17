@@ -18,9 +18,6 @@ hydra:
         level: INFO
       file:
         level: DEBUG
-    loggers:
-      lightning:
-        handlers: []            # lightning will cause dups. remove.
   sweeper:
     ax_config:
       max_trials: 1000
