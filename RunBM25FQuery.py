@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 import argparse
+import multiprocessing as mp
 import os
 import subprocess
 import sys
-from concurrent.futures import ProcessPoolExecutor
 from pathlib import Path
 from typing import Any, List, Tuple
 
 import lxml.etree as ET  # type: ignore
+from tqdm import tqdm  # type: ignore
 
 
 def bm25f(args: List[str]) -> str:
@@ -21,10 +22,9 @@ def bm25f_mp(bin_args: List[str], queries: List[Tuple[int, str]], threads: int) 
         bin_args + ["-qno={}".format(qno), "-query={}".format(text)]
         for qno, text in queries
     ]
-    with ProcessPoolExecutor(max_workers=processes) as executor:
-        output = executor.map(bm25f, bin_args_list)
-
-    out_text = "".join(output).strip()
+    with mp.Pool(processes=processes) as pool:
+        output = tqdm(pool.imap(bm25f, bin_args_list), total=len(queries), unit="q")
+        out_text = "".join(output).strip()
     print(out_text)
 
 
